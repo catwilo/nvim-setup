@@ -22,11 +22,17 @@ command -v npm  >/dev/null || { err "npm not in PATH — load nvm first"; exit 1
 step "0/5  Snapshot current versions (for rollback)"
 snapshot_versions && ok "snapshot saved"
 
-step "1/5  Syncing nvim plugins"
+step "1/6  Installing nvim config"
+NVIM_CFG="$HOME/.config/nvim"
+mkdir -p "$NVIM_CFG"
+ln -sf "$HERE/config/init.lua" "$NVIM_CFG/init.lua" && ok "init.lua -> $NVIM_CFG/init.lua"
+ln -sf "$HERE/lib/servers.lua" "$NVIM_CFG/servers.lua" && ok "servers.lua symlinked"
+
+step "2/6  Syncing nvim plugins"
 nvim --headless "+Lazy! sync" +qa 2>&1 | grep -iE 'error|fail' | grep -vE 'deprecated' || true
 ok "plugins synced"
 
-step "2/5  Installing pinned npm LSP servers"
+step "3/6  Installing pinned npm LSP servers"
 PREFIX="$(npm config get prefix)"; MODDIR="$PREFIX/lib/node_modules"
 for spec in "${NPM_LSP_SERVERS[@]}"; do
   pkg="${spec%@*}"; want="${spec#*@}"
@@ -37,16 +43,16 @@ for spec in "${NPM_LSP_SERVERS[@]}"; do
   npm install -g "$spec" --no-fund --no-audit && ok "$spec" || err "failed: $spec"
 done
 
-step "3/5  Resolving server binaries"
+step "4/6  Resolving server binaries"
 while IFS= read -r cmd; do
   [ -z "$cmd" ] && continue
   if resolve_bin "$cmd" >/dev/null; then ok "$cmd"; else warn "could not resolve $cmd"; fi
 done < <(grep -oE 'cmd = "[^"]+"' "$HERE/lib/servers.lua" | sed 's/cmd = "//; s/"$//' | grep -v lua-language-server)
 
-step "4/5  Installing lua-language-server"
+step "5/6  Installing lua-language-server"
 bash "$HERE/lib/install-lua-ls.sh"
 
-step "5/5  Verifying"
+step "6/6  Verifying"
 if bash "$HERE/lib/verify.sh"; then
   ok "Setup complete."
 else

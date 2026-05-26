@@ -27,7 +27,7 @@ PC=$(nvim --headless -c 'lua io.write(#require("lazy").plugins())' -c 'qa' 2>/de
 [ "${PC:-0}" -ge 1 ] && ok "plugins loaded: $PC" || bad "no plugins loaded"
 
 # 4. LSP server binaries (from the single source of truth)
-SERVERS_LUA="$HOME/scripts/nvim-setup/lib/servers.lua"
+SERVERS_LUA="$HERE/../lib/servers.lua"
 while IFS= read -r cmd; do
   [ -z "$cmd" ] && continue
   if command -v "$cmd" >/dev/null; then ok "LSP server: $cmd"
