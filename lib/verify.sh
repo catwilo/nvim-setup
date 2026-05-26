@@ -35,7 +35,7 @@ while IFS= read -r cmd; do
 done < <(grep -oE 'cmd = "[^"]+"' "$SERVERS_LUA" | sed 's/cmd = "//; s/"$//')
 
 # 5. clipboard backend (clipso) reachable
-CLIPSO="$HOME/scripts/clipso/clipso.sh"
+CLIPSO="$HOME/unix-toolkit-tools/clipso/clipso.sh"
 [ -x "$CLIPSO" ] && ok "clipboard: clipso executable" || bad "clipso not executable at $CLIPSO"
 
 section "result"
