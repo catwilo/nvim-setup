@@ -37,8 +37,8 @@ if vim.fn.executable(clipso) == 1 then
   vim.g.clipboard = {
     name  = 'clipso',
     copy  = { ['+'] = { clipso }, ['*'] = { clipso } },
-    paste = { ['+'] = { 'xclip', '-o', '-selection', 'clipboard' },
-              ['*'] = { 'xclip', '-o', '-selection', 'primary'   } },
+    paste = { ['+'] = { clipso, '--paste' },
+              ['*'] = { clipso, '--paste' } },
     cache_enabled = 0,
   }
 end
